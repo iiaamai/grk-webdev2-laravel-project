@@ -1,0 +1,25 @@
+Model: ActivityLog
+Table: activity_logs
+Database: SQLite
+
+Purpose
+- Audit trail: status changes, user changes, fleet edits, logins, profile updates.
+
+Fields
+- id                    INTEGER PRIMARY KEY
+- user_id               INTEGER NULL     → users.id (null if system/unauthenticated edge case)
+- action                TEXT NOT NULL    (e.g. booking.status_changed, user.login, fleet.updated)
+- subject_type          TEXT NULL        (e.g. Booking, User, Vehicle)
+- subject_id            INTEGER NULL
+- description           TEXT NULL
+- ip_address            TEXT NULL
+- ip_location           TEXT NULL        (resolved from IP when available)
+- geo_lat               REAL NULL        (browser geolocation)
+- geo_lng               REAL NULL
+- properties            TEXT NULL        (JSON extras: old/new values)
+- created_at            TEXT NOT NULL
+
+Notes
+- Prefer append-only: do not soft-delete activity logs (no archived_at).
+- If a subject is soft-deleted, logs remain for history.
+- SQLite: properties as JSON text.

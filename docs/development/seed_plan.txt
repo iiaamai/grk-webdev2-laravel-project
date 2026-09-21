@@ -1,0 +1,38 @@
+GK Trucking Services 2.0 — Seed / demo data plan
+
+Brand in settings: GK Trucking Services
+
+Demo users (local only; hashed passwords in seeder)
+Role            Email                 Password
+System Admin    admin@gk.test         admin123
+Staff           staff@gk.test         staff123
+Customer        customer@gk.test      demo123
+Driver          driver@gk.test        demo123
+  - Driver: set vehicle_type + plate + capacity_kg to match a seeded vehicle
+
+Pricing (seed four rows)
+- 6-wheeler (Isuzu / Fuso) — 14500.00
+- 4-wheeler truck — 9200.00
+- L300 van — 4500.00
+- Reefer / specialized — 18500.00
+
+Vehicles
+- Several available plates across types
+- At least one maintenance example
+- One plate matching the demo driver
+
+Settings
+- company_name = GK Trucking Services
+- support_email = support@gk.test
+- booking_seq = 1 (or next after samples)
+- map_center_lat / map_center_lng = Metro Manila area
+- map_zoom optional
+
+Sample bookings
+- Yes: seed a few in different statuses (pending without gatepass,
+  pending with gatepass, accepted, in_transit, completed with EIR/POD,
+  cancelled) so Overview and lists are testable on first run
+
+Notes
+- Never commit real production secrets
+- Emails use @gk.test for local demo

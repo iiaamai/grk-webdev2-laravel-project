@@ -1,0 +1,41 @@
+GK Trucking Services 2.0 — Permissions matrix
+
+Roles: Customer | Driver | Staff | System Admin
+Legend: Yes | No | Own (own records only) | Assigned (linked booking/delivery)
+
+Action                              Customer   Driver     Staff              System Admin
+----------------------------------  ---------  ---------  -----------------  ------------
+Register + verify email             Yes        Yes        No                 No
+Shared login (redirect by role)     Yes        Yes        Yes                Yes
+User management CRUD                No         No         No                 Yes (all roles)
+Create Staff / any role             No         No         No                 Yes
+Fleet CRUD                          No         No         No                 Yes
+Pricing List CRUD                   No         No         No                 Yes
+Settings                            No         No         No                 Yes
+Create booking                      Own        No         No                 Yes (for any customer)
+Update booking fields               No         No         Yes                Yes
+Change status (pre-gatepass)        No         No         Yes                Yes
+Change status (after gatepass)      No         Own flow*  No                 Yes
+Cancel (pre-gatepass only for Staff) No        No         Yes                Yes
+Cancel (after gatepass)             No         No         No                 Yes
+Upload gatepass (first time)        No         No         Yes                Yes
+Replace gatepass                    No         No         No                 Yes
+Archive / soft-delete booking       No         No         No                 Yes
+Accept job                          No         Yes        No                 Yes
+Update delivery in_transit/complete No         Yes        Via Admin path     Yes
+Upload EIR / POD                    No         Yes        No                 Yes
+View gatepass                       No         Assigned   Yes                Yes
+View EIR                            Own**      Assigned   Yes                Yes
+View POD                            Own**      Assigned   Yes                Yes
+Create invoice / mark paid          View own   No         Yes                Yes
+Earnings & reports                  No         No         No                 Yes
+Activity logs                       No         No         No                 Yes
+Rate overall trip                   Own done   No         No                 View
+Map on booking details              Own***     Own***     Active bookings    Yes
+
+* Driver: accepted → in_transit → completed (own active delivery only).
+** When status allows (EIR: in_transit/completed; POD: completed).
+*** Only after a driver has accepted; nothing on map before accept.
+Customer never sees gatepass.
+
+See also: lifecycle.txt, document_acl.txt

@@ -1,0 +1,108 @@
+GK Trucking Services 2.0 — Feature Spec
+
+Roles
+- Customer — self-register, email verification, auto-active
+- Driver — self-register, email verification, auto-active
+- Staff — limited ops; created by System Admin only (no public register)
+- System Admin — full CRUD on every module (users of any role, fleet, bookings, gatepass, EIR, POD, pricing, earnings, settings, logs)
+
+Auth
+- Email verification required (no SMS)
+- Customer and Driver: public registration, active after email is verified
+- Staff: System Admin creates in User Management
+- System Admin: full user CRUD for all roles
+
+Soft delete
+- Every model has an archived flag (soft delete). Archived records stay in the database and are hidden from normal lists.
+- Only System Admin can delete/archive. Staff cannot delete bookings.
+
+Booking lifecycle (keep)
+pending
+  → Staff or System Admin uploads gatepass (booking still pending; now visible to drivers)
+  → Driver accepts (one active delivery per driver; vehicle locked in use)
+  → in_transit
+  → Driver uploads EIR; on completed, POD photos + digital signature
+  → completed (vehicle released)
+
+- Drivers only see available jobs after a gatepass is uploaded, matching their vehicle type, and not already locked to another driver.
+- Staff can upload the gatepass and update the booking before/until that upload. Once the gatepass is uploaded, Staff cannot override it. System Admin can still change or replace it (full CRUD).
+- Staff cannot delete bookings. System Admin can (soft delete / archive).
+- Drop: driver clearance workflow.
+
+Pricing
+- Keep the legacy default amounts, stored in the database so they can change later (not hardcoded in the form):
+  - 6-wheeler (Isuzu / Fuso) — 14500.00
+  - 4-wheeler truck — 9200.00
+  - L300 van — 4500.00
+  - Reefer / specialized — 18500.00
+- The booking form loads prices from the database based on vehicles/pricing records.
+- System Admin module: Pricing List (CRUD the price list).
+
+Payments
+- In scope. Start with Pay Later / invoice for B2B (quote from the pricing list, invoice, unpaid / paid settlement).
+- Online collection later via PayMongo (GCash, Maya, cards). No SMS.
+
+Maps (Mapbox)
+- Static optimal route only (no live GPS ping).
+- The map is only on the booking details page. Before a driver accepts, the customer sees no map.
+- Driver: map of the accepted booking with the optimal path to the destination.
+- Customer: same route view as the assigned driver, on that booking's details.
+- Staff: map on each active booking.
+- System Admin: map on bookings as well.
+
+Notifications
+- Email only (no SMS) on all booking status changes.
+
+Ratings
+- After delivery, the customer rates the overall trip.
+
+Activity logs
+- Log booking status changes, user changes, fleet edits, logins, and profile updates.
+- Store both browser geolocation and IP address (and IP-based location when available).
+
+UI
+- All roles are web portals (simulation). Responsive layout for mobile and tablet later. Not a native app or PWA in this version.
+
+Settings
+- Still required (company name, support email, booking sequence, and related config).
+- Location / region uses the map (Mapbox), not a plain text region field alone.
+
+---
+
+Customer modules
+- My Bookings
+  - History, active bookings, and details for each booking
+  - New Booking button → separate booking form page
+  - Form shows vehicle options and prices from the database
+  - Payment / quotation (Pay Later / invoice)
+  - Details page: Mapbox static optimal route after a driver has accepted (nothing before that)
+  - View gatepass, EIR, and POD when the booking status allows it
+  - Rate the overall trip after completion
+- Profile
+
+Driver modules
+- Deliveries
+  - Available: bookings that match the driver's vehicle type and already have a gatepass
+  - Active: at most one active delivery
+  - Active delivery details: update status; upload/update EIR; on the completed status, capture POD photos and a digital signature
+  - Details: Mapbox static optimal route to the destination
+- Profile
+- Gatepass is uploaded by Staff or System Admin before the job appears. System Admin can also CRUD gatepass/EIR/POD.
+
+Staff modules (limited)
+- Overview (booking summaries and related ops stats)
+- Live Bookings (map on active booking details)
+- Bookings Management — update and upload gatepass; cannot override a gatepass after it is uploaded; cannot delete bookings; cannot touch fleet, users, earnings, or pricing
+- Profile
+
+System Admin modules (full CRUD on every module)
+- Overview
+- Earnings and Reports (charts and descriptive analytics)
+- Live Bookings (map)
+- Bookings Management (including delete/archive, status, gatepass override)
+- Fleet Management
+- Pricing List
+- Activity Logs
+- User Management (CRUD any role; create Staff)
+- Settings (company/support/sequence; region via map)
+- Profile

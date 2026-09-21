@@ -1,0 +1,37 @@
+GK Trucking Services 2.0 — Document ACL and storage
+
+Storage (private disk; not public URLs)
+storage/app/private/bookings/{booking_number}/gatepass.*
+storage/app/private/bookings/{booking_number}/eir.*
+storage/app/private/bookings/{booking_number}/pod/   (photos + signature)
+
+Serve only through authenticated controllers + policies.
+
+Upload rules
+- Types: jpeg, png, webp, gif
+- Max size: 20MB per file
+
+Who can view
+
+Gatepass
+- Customer: NO
+- Driver: yes if assigned or viewing an available job that has gatepass
+- Staff: yes
+- System Admin: yes
+
+EIR
+- Customer: own booking when in_transit or completed
+- Driver: assigned booking
+- Staff: yes
+- System Admin: yes
+
+POD
+- Customer: own booking when completed
+- Driver: assigned booking
+- Staff: yes
+- System Admin: yes
+
+Who can upload / replace
+- Gatepass first upload: Staff or Admin
+- Gatepass replace: Admin only
+- EIR / POD: Driver on active delivery; Admin full CRUD

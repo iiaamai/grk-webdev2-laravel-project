@@ -1,0 +1,154 @@
+Missing development contents
+GK Trucking Services 2.0 — checklist before / during build
+
+Purpose
+- Track docs and decisions needed before / during build.
+- Status: open | draft | done | deferred
+- Items 1–10 discussed and documented (2026-09-21).
+
+Source of truth
+- docs/development/features.txt
+- docs/development/phases.txt
+- docs/development/permissions_matrix.txt
+- docs/development/lifecycle.txt
+- docs/development/tech_stack.txt
+- docs/development/seed_plan.txt
+- docs/development/document_acl.txt
+- docs/development/email_events.txt
+- docs/development/env_checklist.txt
+- docs/development/routes_ui.txt
+- docs/development/models/*
+- docs/development/entity_relationships.txt
+- docs/gap of the old GRK project/* (legacy gap reference)
+- .cursor/rules/* (synced to GK 2.0)
+
+---
+
+1. Build / phase plan
+Status: done
+File: docs/development/phases.txt
+
+Notes / decisions
+- Backend then UI per feature (test piece by piece).
+- phases.txt has Backend + Frontend sections.
+- MVP = checkpoint B (full trip + EIR/POD + pay-later invoice).
+- After MVP: map, emails, ratings, logs, earnings (checkpoint C features).
+
+---
+
+2. Permissions matrix
+Status: done
+File: docs/development/permissions_matrix.txt
+
+Notes / decisions
+- Staff can change status and cancel only before gatepass.
+- After gatepass: Admin only for status/cancel/gatepass replace.
+- Admin full CRUD including create booking for a customer.
+- Staff can view gatepass/EIR/POD; can mark invoice paid (with Admin).
+- Customer cannot see gatepass.
+
+---
+
+3. Status / lifecycle transition rules
+Status: done
+File: docs/development/lifecycle.txt
+
+Notes / decisions
+- completed requires both EIR and POD.
+- Staff cancel only before gatepass; Admin anytime.
+- Vehicle in_use on accept; release on completed/cancelled when assigned.
+
+---
+
+4. Tech stack alignment
+Status: done
+File: docs/development/tech_stack.txt (renamed; old “tech _stack.txt” removed)
+
+Notes / decisions
+- SQLite; Laravel Mail (not Nodemailer); Mapbox post-MVP; Pay Later in MVP.
+- Brand: GK Trucking Services.
+
+---
+
+5. Seed / demo data plan
+Status: done
+File: docs/development/seed_plan.txt
+
+Notes / decisions
+- Emails @gk.test; company GK Trucking Services; sample bookings yes.
+- Demo passwords local only (admin123 / staff123 / demo123).
+
+---
+
+6. Cursor rules sync
+Status: done
+Files: .cursor/rules/project-context.mdc, agent-workflow.mdc
+
+Notes / decisions
+- GK Trucking Services everywhere; four roles; SQLite; docs/development as source of truth.
+- Booking numbers GK-{YEAR}-%04d.
+
+---
+
+7. Document ACL + storage layout
+Status: done
+File: docs/development/document_acl.txt
+
+Notes / decisions
+- Max 20MB; jpeg/png/webp/gif; customer cannot view gatepass.
+
+---
+
+8. Email events list
+Status: done
+File: docs/development/email_events.txt
+
+Notes / decisions
+- Booking created → customer; gatepass uploaded → matching drivers.
+- Status emails to customer; cancel also driver if assigned; invoice to customer.
+
+---
+
+9. Env / API keys checklist
+Status: done
+File: docs/development/env_checklist.txt
+
+Notes / decisions
+- Add env keys per phase; remind user when starting that phase.
+- No upfront Mapbox/PayMongo required.
+
+---
+
+10. UI / route map
+Status: done
+File: docs/development/routes_ui.txt
+
+Notes / decisions
+- Prefixes: /customer, /driver, /staff, /admin.
+- Shared /login → redirect by role.
+- Separate register for customer and driver.
+
+---
+
+Can wait until that feature slice
+
+11. Invoice PDF layout / branding
+Status: deferred
+
+12. PayMongo field mapping + webhooks
+Status: deferred
+
+13. Earnings charts / metrics definitions
+Status: deferred
+
+14. Responsive breakpoints / mobile layout pass
+Status: deferred
+
+15. Copy LARAVEL_MIGRATION_BRIEF.md into docs/
+Status: deferred
+
+---
+
+Ready for development
+- Items 1–10 are done. Start with phases.txt B0/B1 (foundation + auth), backend then UI per slice.
+- First env reminder: APP_* + sqlite when scaffolding; MAIL_* when verification/mail phase starts.

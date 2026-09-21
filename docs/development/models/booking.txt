@@ -1,0 +1,48 @@
+Model: Booking
+Table: bookings
+Database: SQLite
+
+Purpose
+- Core shipment request and delivery lifecycle.
+
+Fields
+- id                    INTEGER PRIMARY KEY
+- booking_number        TEXT NOT NULL UNIQUE
+                        format: GK-{YEAR}-%04d (year dynamic Asia/Manila)
+- customer_id           INTEGER NOT NULL  → users.id (role customer)
+- driver_id             INTEGER NULL     → users.id (role driver)
+- vehicle_id            INTEGER NULL     → vehicles.id
+- vehicle_type          TEXT NOT NULL    (chosen on form; must exist in pricings)
+- booking_datetime      TEXT NOT NULL    (preferred pickup datetime)
+- posting_date          TEXT NULL
+- pickup_address        TEXT NOT NULL
+- pickup_lat            REAL NOT NULL
+- pickup_lng            REAL NOT NULL
+- dropoff_address       TEXT NOT NULL
+- dropoff_lat           REAL NOT NULL
+- dropoff_lng           REAL NOT NULL
+- cargo_desc            TEXT NULL
+- additional_requirements TEXT NULL
+- status                TEXT NOT NULL DEFAULT 'pending'
+                        values: pending | accepted | in_transit | completed | cancelled
+- is_locked             INTEGER NOT NULL DEFAULT 0  (0/1 boolean)
+- accepted_at           TEXT NULL
+- payout                REAL NULL        (snapshot from Pricing.amount at create)
+- gatepass_path         TEXT NULL        (private storage path)
+- archived_at           TEXT NULL
+- created_at            TEXT NULL
+- updated_at            TEXT NULL
+
+Lifecycle
+pending
+  → Staff/Admin uploads gatepass (still pending; visible to drivers)
+  → Driver accepts → accepted, is_locked=1, driver_id/vehicle_id set, vehicle in_use
+  → in_transit
+  → EIR + POD on complete → completed, vehicle released
+
+Notes
+- Drivers see jobs only if: status=pending, gatepass_path set, not locked, no driver, vehicle_type matches driver.
+- Max one active delivery per driver (accepted or in_transit).
+- Staff may update and upload gatepass once; cannot override gatepass after upload. Admin can.
+- Soft delete / archive: System Admin only. Staff cannot delete.
+- Mapbox static route uses pickup/dropoff lat-lng on details after accept.

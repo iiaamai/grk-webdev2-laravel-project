@@ -1,0 +1,40 @@
+GK Trucking Services 2.0 — Booking lifecycle
+
+Statuses
+pending | accepted | in_transit | completed | cancelled
+
+Normal path
+1. Customer or Admin creates booking → pending
+   - Payout copied from Pricing for vehicle_type
+   - Invoice may be created unpaid (Pay Later)
+2. Staff or Admin uploads gatepass (first time)
+   - Still pending; now visible to matching drivers
+   - Email matching drivers (when email phase is built)
+3. Driver accepts → accepted
+   - is_locked = true; driver_id + vehicle_id set
+   - Vehicle status → in_use
+   - Max one active delivery per driver (accepted or in_transit)
+4. Driver → in_transit
+5. Driver uploads EIR; on complete also POD (photos + signature)
+6. Driver → completed only if EIR AND POD both exist
+   - Vehicle → available (if it was in_use)
+
+Cancel
+- Staff: may cancel only BEFORE gatepass is uploaded
+- Admin: may cancel anytime (including after gatepass)
+- On cancel with assigned vehicle: release vehicle to available; unlock as needed
+
+After gatepass is uploaded
+- Staff cannot change status (including cancel)
+- Staff cannot replace gatepass
+- Admin can change status and replace gatepass
+
+Admin
+- Full CRUD on bookings and related docs
+- Status overrides must keep vehicle lock/state consistent
+
+Dropped
+- Driver clearance workflow (not in product)
+
+Map
+- Static Mapbox route on details only after accept (pickup/dropoff lat-lng)

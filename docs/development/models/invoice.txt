@@ -1,0 +1,25 @@
+Model: Invoice
+Table: invoices
+Database: SQLite
+
+Purpose
+- Pay Later / invoice for a booking. One invoice per booking.
+- Online PayMongo can be added later via optional reference fields.
+
+Fields
+- id                    INTEGER PRIMARY KEY
+- booking_id            INTEGER NOT NULL UNIQUE  → bookings.id
+- amount                REAL NOT NULL               (from Booking.payout / Pricing snapshot)
+- status                TEXT NOT NULL DEFAULT 'unpaid'
+                        values: unpaid | paid
+- issued_at             TEXT NULL
+- paid_at               TEXT NULL
+- notes                 TEXT NULL
+- paymongo_reference    TEXT NULL   (reserved for later online payments)
+- archived_at           TEXT NULL
+- created_at            TEXT NULL
+- updated_at            TEXT NULL
+
+Notes
+- No partial payments in this version (unpaid / paid only).
+- Soft delete via archived_at.

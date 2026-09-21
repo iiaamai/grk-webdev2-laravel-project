@@ -1,0 +1,28 @@
+Model: Setting
+Table: settings
+Database: SQLite
+
+Purpose
+- Key-value (or single-row) company configuration.
+- Region / service area uses Mapbox center (lat/lng), not text-only region.
+
+Fields (key-value style)
+- id                    INTEGER PRIMARY KEY
+- setting_key           TEXT NOT NULL UNIQUE
+- setting_value         TEXT NULL
+- archived_at           TEXT NULL
+- created_at            TEXT NULL
+- updated_at            TEXT NULL
+
+Expected keys (seed)
+- company_name
+- support_email
+- booking_seq           (integer sequence for GK-{YEAR}-####)
+- map_center_lat
+- map_center_lng
+- map_zoom              (optional)
+
+Notes
+- System Admin Settings module manages these.
+- Soft delete rarely used; keys can be archived if retired.
+- Alternative: one settings row with columns — key-value is simpler to extend.

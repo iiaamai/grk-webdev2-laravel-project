@@ -1,0 +1,30 @@
+GK Trucking Services 2.0 — Env checklist
+
+Policy
+- Do NOT fill every key up front.
+- Add env vars when the related development phase starts.
+- Agent/dev must REMIND the user at each phase what to add.
+- Put placeholder names in .env.example only; never commit real secrets.
+
+Phase reminders
+
+Foundation / always
+- APP_NAME=GK Trucking Services
+- APP_KEY (artisan key:generate)
+- APP_URL
+- APP_TIMEZONE=Asia/Manila (or config/app.php)
+- DB_CONNECTION=sqlite
+
+Auth / mail verification (when building auth or email verify)
+- MAIL_MAILER=log   (or smtp + Mailtrap)
+- MAIL_FROM_ADDRESS / MAIL_FROM_NAME
+
+Map phase (post-MVP)
+- MAPBOX_TOKEN (or MAPBOX_ACCESS_TOKEN)
+
+PayMongo (after MVP B, when online pay is added)
+- PAYMONGO_SECRET_KEY
+- PAYMONGO_PUBLIC_KEY
+
+Optional later
+- QUEUE_CONNECTION=database (already Laravel default in .env.example)

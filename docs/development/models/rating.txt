@@ -1,0 +1,21 @@
+Model: Rating
+Table: ratings
+Database: SQLite
+
+Purpose
+- Customer rates the overall trip after delivery is completed.
+- One rating per booking.
+
+Fields
+- id                    INTEGER PRIMARY KEY
+- booking_id            INTEGER NOT NULL UNIQUE  → bookings.id
+- customer_id           INTEGER NOT NULL         → users.id
+- score                 INTEGER NOT NULL         (e.g. 1–5)
+- comment               TEXT NULL
+- archived_at           TEXT NULL
+- created_at            TEXT NULL
+- updated_at            TEXT NULL
+
+Notes
+- Allowed only when Booking.status = completed and rater is the booking customer.
+- Soft delete via archived_at.

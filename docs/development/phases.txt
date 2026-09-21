@@ -1,0 +1,84 @@
+GK Trucking Services 2.0 — Build phases
+
+Approach
+- Backend first, then UI, per feature (test each piece before the next).
+- MVP (first serious demo) = checkpoint B: full trip + EIR/POD + pay-later invoice.
+- After MVP: map, emails, ratings, activity logs, earnings charts.
+- Remind to add env keys when each phase needs them (see env_checklist.txt).
+
+Checkpoints
+- A: Customer books → gatepass → driver delivers → EIR/POD → completed
+- B (MVP): A + invoice unpaid/paid
+- C (post-MVP): Mapbox route, emails, ratings, logs, earnings overview
+
+Brand
+- Product name: GK Trucking Services
+- Booking numbers: GK-{YEAR}-%04d (dynamic year, Asia/Manila)
+
+---
+
+BACKEND PHASES (do before matching UI)
+
+B0. Foundation
+- Migrations for all models (see docs/development/models)
+- Soft archive (archived_at)
+- Seed plan (see seed_plan.txt)
+
+B1. Auth
+- Unified users + roles (customer, driver, staff, system_admin)
+- Shared login → redirect by role
+- Customer/Driver register + email verification (auto-active)
+- Admin creates Staff (and any role)
+
+B2. Admin master data
+- Settings, Pricing List, Fleet, User management
+
+B3. Customer bookings (data + rules)
+- Create / list / details; payout snapshot from Pricing
+- Pickup/dropoff address + lat/lng
+
+B4. Staff/Admin bookings + gatepass
+- Staff: update fields, status/cancel only before gatepass; first gatepass upload
+- Admin: full CRUD, gatepass override, archive
+
+B5. Driver deliveries
+- Available (gatepass + matching vehicle type), one active, accept, status updates
+- Vehicle in_use / release
+
+B6. EIR + POD
+- Required both before completed
+
+B7. Invoice (MVP end)
+- One per booking; unpaid / paid; Staff + Admin mark paid
+→ Checkpoint B (MVP)
+
+B8. Mapbox helpers (post-MVP)
+- Static optimal route from coords (no live GPS)
+
+B9. Emails (post-MVP)
+- Laravel Mail; events in email_events.txt
+
+B10. Ratings + activity logs + earnings queries (post-MVP)
+
+---
+
+FRONTEND PHASES (after matching backend slice)
+
+F1. Layout shells + nav for customer / driver / staff / admin
+F2. Auth pages (shared login, register customer/driver, verify email)
+F3. Admin: settings, pricing, fleet, users
+F4. Customer: My Bookings + new booking form + details
+F5. Staff: overview, bookings, gatepass upload
+F6. Driver: deliveries available / active / details
+F7. Document upload/view UI (ACL)
+F8. Invoice UI
+F9. Map on booking details (after accept)
+F10. Ratings, activity logs, earnings/overview charts
+
+---
+
+Suggested build loop (per feature)
+
+1. Backend for slice → test with tinker/HTTP/tests
+2. Frontend for slice → click-test
+3. Move to next slice

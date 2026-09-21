@@ -1,0 +1,21 @@
+Model: Eir
+Table: eirs
+Database: SQLite
+
+Purpose
+- Equipment Interchange Receipt (or equivalent delivery document) for a booking.
+- One EIR per booking (1:1).
+
+Fields
+- booking_id            INTEGER PRIMARY KEY  → bookings.id
+- eir_path              TEXT NOT NULL        (private storage path)
+- uploaded_at           TEXT NOT NULL
+- archived_at           TEXT NULL
+- created_at            TEXT NULL
+- updated_at            TEXT NULL
+
+Notes
+- Driver uploads/updates on active delivery (typically while in_transit before complete).
+- System Admin has full CRUD.
+- Required before / as part of moving to completed (with POD).
+- Soft delete via archived_at if needed; usually follows booking archive.

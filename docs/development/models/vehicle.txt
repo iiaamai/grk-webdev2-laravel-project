@@ -1,0 +1,27 @@
+Model: Vehicle
+Table: vehicles
+Database: SQLite
+
+Purpose
+- Physical fleet unit. Locked to in_use when a driver accepts a booking.
+- Price is NOT stored here; pricing is by vehicle type (see Pricing).
+
+Fields
+- id                    INTEGER PRIMARY KEY
+- plate_number          TEXT NOT NULL UNIQUE
+- label                 TEXT NOT NULL
+- type                  TEXT NOT NULL
+                        examples: 6-wheeler (Isuzu / Fuso) | 4-wheeler truck |
+                        L300 van | Reefer / specialized
+                        (must align with Pricing.vehicle_type)
+- capacity_kg           INTEGER NOT NULL
+- status                TEXT NOT NULL DEFAULT 'available'
+                        values: available | in_use | maintenance
+- archived_at           TEXT NULL
+- created_at            TEXT NULL
+- updated_at            TEXT NULL
+
+Notes
+- On driver accept: match driver.plate to plate_number when possible; set status = in_use.
+- On booking completed/cancelled (when releasing): status = available if it was in_use.
+- Soft delete via archived_at (System Admin only).

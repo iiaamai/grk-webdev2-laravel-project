@@ -1,0 +1,27 @@
+Model: Pricing
+Table: pricings
+Database: SQLite
+
+Purpose
+- Admin-managed price list by vehicle type.
+- Booking form loads amounts from this table (not hardcoded).
+
+Fields
+- id                    INTEGER PRIMARY KEY
+- vehicle_type          TEXT NOT NULL UNIQUE
+                        seed defaults:
+                        - 6-wheeler (Isuzu / Fuso)
+                        - 4-wheeler truck
+                        - L300 van
+                        - Reefer / specialized
+- amount                REAL NOT NULL
+                        seed defaults: 14500.00 | 9200.00 | 4500.00 | 18500.00
+- archived_at           TEXT NULL
+- created_at            TEXT NULL
+- updated_at            TEXT NULL
+
+Notes
+- One row per vehicle type.
+- When a booking is created, copy amount into Booking.payout (snapshot so later price edits do not change old bookings).
+- System Admin Pricing List module: full CRUD.
+- Soft delete via archived_at.

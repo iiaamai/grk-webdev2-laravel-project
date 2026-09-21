@@ -1,0 +1,26 @@
+GK Trucking Services 2.0 — Tech stack
+
+Product
+- Brand: GK Trucking Services
+- Laravel 13 + PHP ^8.3
+- SQLite (default)
+- Blade portals + Vite ^8 + Tailwind CSS ^4
+- Eloquent, Form Requests, Policies
+- Private file storage for gatepass / EIR / POD
+- Timezone: Asia/Manila
+- Booking numbers: GK-{YEAR}-%04d
+
+Integrations (by phase)
+- Laravel Mail (log/Mailtrap in dev; SMTP later) — not Nodemailer
+- Mapbox static optimal route on booking details (after accept) — post-MVP
+- Pay Later invoice now; PayMongo later (after MVP B)
+
+Defaults
+- Session / cache / queue: database (Laravel .env.example)
+- Four roles: customer, driver, staff, system_admin
+
+Dev tooling
+- PHPUnit, Pint, Pail/Pao, Faker, Mockery, Collision
+
+UI
+- Web simulation for all roles; responsive polish later (not PWA/native first)

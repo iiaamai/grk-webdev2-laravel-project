@@ -1,0 +1,29 @@
+Model: User
+Table: users
+Database: SQLite
+
+Purpose
+- Single identity for all roles (customer, driver, staff, system_admin).
+- Replaces legacy split of customers / drivers / admins / users tables.
+
+Fields
+- id                    INTEGER PRIMARY KEY
+- name                  TEXT NOT NULL
+- email                 TEXT NOT NULL UNIQUE
+- email_verified_at     TEXT NULL (datetime; required for login after register)
+- password              TEXT NOT NULL (hashed)
+- mobile                TEXT NULL
+- role                  TEXT NOT NULL
+                        values: customer | driver | staff | system_admin
+- vehicle_type          TEXT NULL (driver only; matches Pricing / Vehicle type)
+- plate                 TEXT NULL (driver only; plate of assigned unit)
+- capacity_kg           INTEGER NULL (driver only)
+- remember_token        TEXT NULL
+- archived_at           TEXT NULL (soft delete; null = active)
+- created_at            TEXT NULL
+- updated_at            TEXT NULL
+
+Notes
+- Driver fields are nullable for non-driver roles; validate as required when role = driver.
+- Customer and Driver self-register; Staff is created by System Admin.
+- Soft delete via archived_at (Admin only).

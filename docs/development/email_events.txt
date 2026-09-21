@@ -1,0 +1,23 @@
+GK Trucking Services 2.0 — Email events
+
+Mailer: Laravel Mail (not Nodemailer)
+Dev: log or Mailtrap when that phase starts; SMTP later
+No SMS
+
+Event                         Recipients
+----------------------------  ------------------------------------------
+Email verification            New customer or driver
+Booking created               Customer
+Gatepass uploaded             Drivers matching that vehicle type
+Accepted                      Customer
+In transit                    Customer
+Completed                     Customer
+Cancelled                     Customer (+ assigned driver if any)
+Invoice issued                Customer
+Invoice marked paid           Customer
+
+Staff/Admin are not on the default email list (they use the app).
+
+Build note
+- Implement with post-MVP email phase (see phases.txt B9/F9)
+- Remind to set MAIL_* in .env when starting that phase

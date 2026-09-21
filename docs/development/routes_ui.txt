@@ -1,0 +1,48 @@
+GK Trucking Services 2.0 — Routes / UI map
+
+Auth
+- Shared login: /login  → after success redirect by role
+- Register customer: /register/customer
+- Register driver: /register/driver
+- Email verification: Laravel default verify routes
+- Logout: /logout
+
+Portals (prefix + middleware by role)
+
+Customer  /customer
+- /customer/bookings              My Bookings (list)
+- /customer/bookings/create       New booking form
+- /customer/bookings/{id}         Details (map after accept; EIR/POD when allowed; no gatepass)
+- /customer/profile
+
+Driver  /driver
+- /driver/deliveries              Available + active sections
+- /driver/deliveries/{id}         Details (status, EIR/POD, map)
+- /driver/profile
+
+Staff  /staff
+- /staff/overview
+- /staff/bookings
+- /staff/bookings/{id}            Update, gatepass first upload, map on active
+- /staff/profile
+
+System Admin  /admin
+- /admin/overview
+- /admin/earnings
+- /admin/bookings (+ archive, override gatepass/status)
+- /admin/fleet
+- /admin/pricing
+- /admin/users
+- /admin/activity-logs
+- /admin/settings
+- /admin/profile
+
+Documents (ACL controller)
+- e.g. /documents/bookings/{id}/gatepass|eir|pod/...
+
+Public
+- /  landing (choose or go to login)
+
+Controllers / views (target)
+- app/Http/Controllers/{Customer,Driver,Staff,Admin}/
+- resources/views/{customer,driver,staff,admin,auth,layouts}/

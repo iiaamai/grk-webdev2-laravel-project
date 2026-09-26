@@ -1,7 +1,10 @@
 <?php
 
 use App\Enums\UserRole;
+use App\Http\Controllers\Admin\PricingController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\LoginController;
@@ -69,6 +72,14 @@ Route::middleware(['auth', 'verified', 'not_archived'])->group(function (): void
         ->name('admin.')
         ->group(function (): void {
             Route::get('/', PortalHomeController::class)->name('home');
-            Route::post('users', [UserController::class, 'store'])->name('users.store');
+
+            Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
+            Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+
+            Route::resource('pricing', PricingController::class)->except(['show']);
+            Route::resource('fleet', VehicleController::class)
+                ->parameters(['fleet' => 'vehicle'])
+                ->except(['show']);
+            Route::resource('users', UserController::class)->except(['show']);
         });
 });

@@ -24,7 +24,7 @@ class AdminCreateUserTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $response->assertRedirect(route('admin.home'));
+        $response->assertRedirect(route('admin.users.index'));
 
         $staff = User::query()->where('email', 'new.staff@example.com')->first();
         $this->assertNotNull($staff);
@@ -45,7 +45,7 @@ class AdminCreateUserTest extends TestCase
             'capacity_kg' => 1000,
             'password' => 'password',
             'password_confirmation' => 'password',
-        ])->assertRedirect(route('admin.home'));
+        ])->assertRedirect(route('admin.users.index'));
 
         $driver = User::query()->where('email', 'fleet.driver@example.com')->first();
         $this->assertNotNull($driver);

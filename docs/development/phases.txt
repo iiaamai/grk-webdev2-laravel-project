@@ -53,7 +53,7 @@ BACKEND PHASES (do before matching UI)
 - Routes: /customer/bookings (index, create, store, show); BookingPolicy + CreateCustomerBooking action
 - Minimal customer layout (F4 may polish UI)
 
-[ ] B4. Staff/Admin bookings + gatepass
+[x] B4. Staff/Admin bookings + gatepass
 - Staff: update fields, status/cancel only before gatepass; first gatepass upload
 - Admin: full CRUD, gatepass override, archive
 

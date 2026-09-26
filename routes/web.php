@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\UserRole;
+use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\PricingController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
@@ -12,8 +13,10 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterCustomerController;
 use App\Http\Controllers\Auth\RegisterDriverController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\BookingDocumentController;
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\PortalHomeController;
+use App\Http\Controllers\Staff\BookingController as StaffBookingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -47,6 +50,8 @@ Route::middleware('auth')->group(function (): void {
 });
 
 Route::middleware(['auth', 'verified', 'not_archived'])->group(function (): void {
+    Route::get('documents/bookings/{booking}/gatepass', [BookingDocumentController::class, 'gatepass'])
+        ->name('documents.bookings.gatepass');
     Route::middleware('role:'.UserRole::Customer->value)
         ->prefix('customer')
         ->name('customer.')
@@ -67,6 +72,12 @@ Route::middleware(['auth', 'verified', 'not_archived'])->group(function (): void
         ->name('staff.')
         ->group(function (): void {
             Route::get('/', PortalHomeController::class)->name('home');
+
+            Route::resource('bookings', StaffBookingController::class)->only(['index', 'show', 'update']);
+            Route::post('bookings/{booking}/gatepass', [StaffBookingController::class, 'storeGatepass'])
+                ->name('bookings.gatepass.store');
+            Route::post('bookings/{booking}/cancel', [StaffBookingController::class, 'cancel'])
+                ->name('bookings.cancel');
         });
 
     Route::middleware('role:'.UserRole::SystemAdmin->value)
@@ -83,5 +94,13 @@ Route::middleware(['auth', 'verified', 'not_archived'])->group(function (): void
                 ->parameters(['fleet' => 'vehicle'])
                 ->except(['show']);
             Route::resource('users', UserController::class)->except(['show']);
+
+            Route::resource('bookings', AdminBookingController::class);
+            Route::post('bookings/{booking}/gatepass', [AdminBookingController::class, 'storeGatepass'])
+                ->name('bookings.gatepass.store');
+            Route::patch('bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])
+                ->name('bookings.status.update');
+            Route::post('bookings/{booking}/cancel', [AdminBookingController::class, 'cancel'])
+                ->name('bookings.cancel');
         });
 });

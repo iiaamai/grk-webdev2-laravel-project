@@ -26,6 +26,12 @@ class PortalHomeController extends Controller
             ]);
         }
 
+        if ($user->isStaff()) {
+            return view('portals.staff-home', [
+                'name' => $user->name,
+            ]);
+        }
+
         return view('portals.home', [
             'role' => $user->role->value,
             'name' => $user->name,

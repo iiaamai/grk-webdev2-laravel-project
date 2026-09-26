@@ -1,0 +1,113 @@
+GK Trucking Services 2.0 — Development notes
+
+Purpose
+- Track decisions that affect how phases are built (especially external APIs).
+- Source of truth for “placeholder until enabled” integrations.
+- Related: phases.txt, env_checklist.txt.
+
+Policy (agreed)
+- Backend before frontend, per feature.
+- Phases that need external APIs ship as placeholders first: stub service
+  classes/methods that return null / “not configured” and never call the API.
+- Live calls only after the matching env keys are added (see env_checklist.txt).
+- Agent/dev must remind the user which keys to add when enabling an integration.
+
+---
+
+Placeholder integrations
+
+1. Mail (Laravel Mail / SMTP)
+Status: placeholder until enabled
+Phases: B1 (email verification), B9 (event emails), F2 (verify UI)
+Env when enabling: MAIL_MAILER, MAIL_FROM_ADDRESS, MAIL_FROM_NAME
+  (and SMTP/Mailtrap host keys if not using log)
+Notes
+- Do not send real email until this is enabled.
+- Stub / no-op mail path during early backend; verification and notification
+  flows can exist as code paths that skip send or mark “not configured”.
+- When enabling: wire Laravel Mail + events in email_events.txt.
+
+2. Mapbox
+Status: placeholder until enabled
+Phases: B8 (helpers), F9 (map on booking details); settings map_center_* keys
+Env when enabling: MAPBOX_TOKEN (or MAPBOX_ACCESS_TOKEN)
+Notes
+- Stub Mapbox/route helper: return null / “not configured”; no HTTP to Mapbox.
+- Booking still stores pickup/dropoff lat/lng for later use.
+- When enabling: static optimal route from coords only (no live GPS).
+
+3. PayMongo
+Status: placeholder until enabled (after MVP B)
+Phases: reserved on Invoice (paymongo_reference); online pay after checkpoint B
+Env when enabling: PAYMONGO_SECRET_KEY, PAYMONGO_PUBLIC_KEY
+Notes
+- MVP uses Pay Later only (invoice unpaid / paid). No PayMongo API calls.
+- Stub payment service if scaffolded early; keep DB field nullable.
+- When enabling: field mapping + webhooks (see missing_dev_contents item 12).
+
+---
+
+Enable checklist (per integration)
+
+1. Add env keys from env_checklist.txt (never commit secrets).
+2. Replace stub methods with real client/API calls.
+3. Update this file: Status → enabled; note date if useful.
+4. Smoke-test the related phase (B1/B9, B8/F9, or PayMongo slice).
+
+---
+
+Before starting (pre-B0 recommendations)
+
+1. Env first (foundation only)
+- Set APP_NAME, APP_KEY, APP_URL, timezone Asia/Manila, DB_CONNECTION=sqlite.
+- Do not add MAIL_*, Mapbox, or PayMongo keys until those integrations are enabled.
+
+2. B1 email verification while Mail is placeholder (decide before coding auth)
+- Option A (recommended for local demo): seed users with email_verified_at already set
+  so login works without real mail.
+- Option B: keep verify routes/UI but skip actual send (stub path).
+- Pick one before B1 so login is not blocked during development.
+
+3. Extend stock users migration in B0
+- Default Laravel users table lacks role, mobile, driver fields, archived_at.
+- B0 should alter or replace that migration to match docs/development/models/user.txt.
+- Fresh SQLite migrate is fine at this stage.
+
+4. One slice at a time
+- B0 scope: migrations + Eloquent models + seeders only.
+- Do not mix B1 auth UI or portal routes into the same pass.
+
+5. Auth stack (decide at B1, not B0)
+- Manual controllers + Form Requests vs Laravel Breeze — either is fine.
+- Choose once so portal prefixes (/customer, /driver, /staff, /admin) stay consistent.
+
+6. Soft archive (optional but useful in B0)
+- Shared archived_at pattern + global scope (or query helper) so normal lists
+  hide archived rows by default.
+
+7. Seed sample bookings (B0)
+- Follow seed_plan.txt: multiple statuses (pending w/o gatepass, pending with gatepass,
+  accepted, in_transit, completed with EIR/POD, cancelled) so lists/overview are
+  testable after early UI slices.
+
+---
+
+What is still “real” vs placeholder
+
+Real (not dummy)
+- Laravel auth: hashed passwords, roles, middleware, role-based redirect.
+- Seeded demo users (seed_plan.txt) are sample data, not fake “pretend login”.
+- Full booking lifecycle, gatepass, accept, vehicle lock, EIR/POD, Pay Later invoice.
+- Policies, Form Requests, private document ACL, portal CRUD + Blade UI.
+
+Placeholder until user enables external API
+- Mail: no real send (verify/notification code paths may exist as stubs).
+- Mapbox: no route/map HTTP calls.
+- PayMongo: Pay Later only; no online payment API.
+
+---
+
+Other notes
+- phases.txt B8 / B9 / F9 call out “placeholder until keys”.
+- Pay Later invoice (B7 / F8) is in-app and does not need an external API.
+- Pre-B0 checklist: see “Before starting” section above; phases.txt B0/B1 reference it.

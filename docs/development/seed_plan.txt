@@ -9,6 +9,8 @@ Staff           staff@gk.test         staff123
 Customer        customer@gk.test      demo123
 Driver          driver@gk.test        demo123
   - Driver: set vehicle_type + plate + capacity_kg to match a seeded vehicle
+Driver (2nd)    driver2@gk.test       demo123
+  - Extra driver so accepted + in_transit sample bookings do not share one active trip
 
 Pricing (seed four rows)
 - 6-wheeler (Isuzu / Fuso) — 14500.00

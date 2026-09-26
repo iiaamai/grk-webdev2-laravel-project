@@ -5,6 +5,8 @@ Approach
 - MVP (first serious demo) = checkpoint B: full trip + EIR/POD + pay-later invoice.
 - After MVP: map, emails, ratings, activity logs, earnings charts.
 - Remind to add env keys when each phase needs them (see env_checklist.txt).
+- External APIs (Mail, Mapbox, PayMongo): placeholders first — stub services,
+  no live calls until keys are set. See development_notes.txt.
 
 Checkpoints
 - A: Customer books → gatepass → driver delivers → EIR/POD → completed
@@ -21,14 +23,20 @@ BACKEND PHASES (do before matching UI)
 
 B0. Foundation
 - Migrations for all models (see docs/development/models)
-- Soft archive (archived_at)
-- Seed plan (see seed_plan.txt)
+- Extend users table (role, mobile, driver fields, archived_at) — see user.txt
+- Soft archive (archived_at); optional global scope on lists
+- Seed plan (see seed_plan.txt); include multi-status sample bookings
+- Scope: migrations + models + seeders only (no auth UI yet)
+- Pre-start env: APP_*, sqlite, Asia/Manila — see development_notes.txt “Before starting”
 
 B1. Auth
 - Unified users + roles (customer, driver, staff, system_admin)
 - Shared login → redirect by role
 - Customer/Driver register + email verification (auto-active)
 - Admin creates Staff (and any role)
+- Mail send: placeholder until MAIL_* enabled (see development_notes.txt)
+- While Mail placeholder: seed email_verified_at OR stub verify send (decide in dev notes)
+- Auth stack: choose manual vs Breeze at start of B1 (see development_notes.txt)
 
 B2. Admin master data
 - Settings, Pricing List, Fleet, User management
@@ -50,13 +58,16 @@ B6. EIR + POD
 
 B7. Invoice (MVP end)
 - One per booking; unpaid / paid; Staff + Admin mark paid
+- PayMongo: placeholder only (nullable paymongo_reference; no API until after MVP)
 → Checkpoint B (MVP)
 
-B8. Mapbox helpers (post-MVP)
-- Static optimal route from coords (no live GPS)
+B8. Mapbox helpers (post-MVP) — placeholder until MAPBOX_* keys
+- Stub route helper (null / not configured); no live Mapbox calls
+- When enabled: static optimal route from coords (no live GPS)
 
-B9. Emails (post-MVP)
-- Laravel Mail; events in email_events.txt
+B9. Emails (post-MVP) — placeholder until MAIL_* keys
+- Stub / no-op send until enabled; events listed in email_events.txt
+- When enabled: Laravel Mail wired to those events
 
 B10. Ratings + activity logs + earnings queries (post-MVP)
 
@@ -66,13 +77,14 @@ FRONTEND PHASES (after matching backend slice)
 
 F1. Layout shells + nav for customer / driver / staff / admin
 F2. Auth pages (shared login, register customer/driver, verify email)
+    (verify UI ok; real mail send awaits MAIL_* — development_notes.txt)
 F3. Admin: settings, pricing, fleet, users
 F4. Customer: My Bookings + new booking form + details
 F5. Staff: overview, bookings, gatepass upload
 F6. Driver: deliveries available / active / details
 F7. Document upload/view UI (ACL)
 F8. Invoice UI
-F9. Map on booking details (after accept)
+F9. Map on booking details (after accept) — placeholder until MAPBOX_* keys
 F10. Ratings, activity logs, earnings/overview charts
 
 ---

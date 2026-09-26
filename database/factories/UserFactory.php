@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -18,8 +19,6 @@ class UserFactory extends Factory
     protected static ?string $password;
 
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
@@ -29,17 +28,50 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'mobile' => fake()->numerify('09#########'),
+            'role' => UserRole::Customer,
+            'vehicle_type' => null,
+            'plate' => null,
+            'capacity_kg' => null,
             'remember_token' => Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    public function customer(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Customer,
+        ]);
+    }
+
+    public function driver(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Driver,
+            'vehicle_type' => '4-wheeler truck',
+            'plate' => strtoupper(fake()->bothify('???-####')),
+            'capacity_kg' => 3000,
+        ]);
+    }
+
+    public function staff(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Staff,
+        ]);
+    }
+
+    public function systemAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::SystemAdmin,
         ]);
     }
 }

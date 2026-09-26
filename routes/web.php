@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterCustomerController;
 use App\Http\Controllers\Auth\RegisterDriverController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\PortalHomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +52,7 @@ Route::middleware(['auth', 'verified', 'not_archived'])->group(function (): void
         ->name('customer.')
         ->group(function (): void {
             Route::get('/', PortalHomeController::class)->name('home');
+            Route::resource('bookings', CustomerBookingController::class)->only(['index', 'create', 'store', 'show']);
         });
 
     Route::middleware('role:'.UserRole::Driver->value)

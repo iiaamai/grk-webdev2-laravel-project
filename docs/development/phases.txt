@@ -46,9 +46,12 @@ BACKEND PHASES (do before matching UI)
 - Minimal admin layout (F3 may polish UI)
 - UserSeeder: plain passwords (hashed via model cast)
 
-[ ] B3. Customer bookings (data + rules)
+[x] B3. Customer bookings (data + rules)
 - Create / list / details; payout snapshot from Pricing
 - Pickup/dropoff address + lat/lng
+- Rules: pricing row exists; at least one available fleet unit of type; GK-{YEAR}-#### via booking_seq
+- Routes: /customer/bookings (index, create, store, show); BookingPolicy + CreateCustomerBooking action
+- Minimal customer layout (F4 may polish UI)
 
 [ ] B4. Staff/Admin bookings + gatepass
 - Staff: update fields, status/cancel only before gatepass; first gatepass upload
@@ -85,7 +88,7 @@ FRONTEND PHASES (after matching backend slice)
     (minimal stub forms shipped with B1 for QA; polish in F2)
     (verify UI ok; real mail send awaits MAIL_* — development_notes.txt)
 [ ] F3. Admin: settings, pricing, fleet, users (polish UI beyond B2 stubs)
-[ ] F4. Customer: My Bookings + new booking form + details
+[ ] F4. Customer: My Bookings + new booking form + details (B3 stubs shipped; polish in F4)
 [ ] F5. Staff: overview, bookings, gatepass upload
 [ ] F6. Driver: deliveries available / active / details
 [ ] F7. Document upload/view UI (ACL)

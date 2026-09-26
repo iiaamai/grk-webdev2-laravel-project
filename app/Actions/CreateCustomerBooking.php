@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Actions;
+
+use App\Enums\BookingStatus;
+use App\Enums\VehicleStatus;
+use App\Models\Booking;
+use App\Models\Pricing;
+use App\Models\User;
+use App\Models\Vehicle;
+use App\Services\BookingNumberGenerator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+
+class CreateCustomerBooking
+{
+    public function __construct(
+        private readonly BookingNumberGenerator $bookingNumberGenerator,
+    ) {}
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function execute(User $customer, array $data): Booking
+    {
+        if (! $customer->isCustomer()) {
+            throw ValidationException::withMessages([
+                'customer' => 'Only customers can create bookings through this action.',
+            ]);
+        }
+
+        $pricing = Pricing::query()
+            ->where('vehicle_type', $data['vehicle_type'])
+            ->first();
+
+        if ($pricing === null) {
+            throw ValidationException::withMessages([
+                'vehicle_type' => 'The selected vehicle type is not in the pricing list.',
+            ]);
+        }
+
+        $hasAvailableVehicle = Vehicle::query()
+            ->where('type', $data['vehicle_type'])
+            ->where('status', VehicleStatus::Available)
+            ->exists();
+
+        if (! $hasAvailableVehicle) {
+            throw ValidationException::withMessages([
+                'vehicle_type' => 'No available fleet unit for this vehicle type right now.',
+            ]);
+        }
+
+        return DB::transaction(function () use ($customer, $data, $pricing): Booking {
+            return Booking::query()->create([
+                'booking_number' => $this->bookingNumberGenerator->next(),
+                'customer_id' => $customer->id,
+                'vehicle_type' => $data['vehicle_type'],
+                'booking_datetime' => $data['booking_datetime'],
+                'posting_date' => now('Asia/Manila')->toDateString(),
+                'pickup_address' => $data['pickup_address'],
+                'pickup_lat' => $data['pickup_lat'],
+                'pickup_lng' => $data['pickup_lng'],
+                'dropoff_address' => $data['dropoff_address'],
+                'dropoff_lat' => $data['dropoff_lat'],
+                'dropoff_lng' => $data['dropoff_lng'],
+                'cargo_desc' => $data['cargo_desc'] ?? null,
+                'additional_requirements' => $data['additional_requirements'] ?? null,
+                'status' => BookingStatus::Pending,
+                'is_locked' => false,
+                'payout' => $pricing->amount,
+            ]);
+        });
+    }
+}

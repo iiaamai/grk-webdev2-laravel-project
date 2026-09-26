@@ -20,6 +20,12 @@ class PortalHomeController extends Controller
             ]);
         }
 
+        if ($user->isCustomer()) {
+            return view('portals.customer-home', [
+                'name' => $user->name,
+            ]);
+        }
+
         return view('portals.home', [
             'role' => $user->role->value,
             'name' => $user->name,

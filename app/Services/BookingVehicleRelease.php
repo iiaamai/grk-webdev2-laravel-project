@@ -23,4 +23,18 @@ class BookingVehicleRelease
             'is_locked' => false,
         ])->save();
     }
+
+    public function releaseVehicleAfterCompletion(Booking $booking): void
+    {
+        if ($booking->vehicle_id !== null) {
+            Vehicle::query()
+                ->whereKey($booking->vehicle_id)
+                ->update(['status' => VehicleStatus::Available]);
+        }
+
+        $booking->forceFill([
+            'vehicle_id' => null,
+            'is_locked' => false,
+        ])->save();
+    }
 }

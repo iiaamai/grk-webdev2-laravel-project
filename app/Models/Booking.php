@@ -6,6 +6,7 @@ use App\Enums\BookingStatus;
 use App\Models\Concerns\Archivable;
 use Database\Factories\BookingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -125,5 +126,30 @@ class Booking extends Model
     public function hasGatepass(): bool
     {
         return filled($this->gatepass_path);
+    }
+
+    /**
+     * @param  Builder<Booking>  $query
+     * @return Builder<Booking>
+     */
+    public function scopeAvailableForDriver(Builder $query, User $driver): Builder
+    {
+        return $query
+            ->where('status', BookingStatus::Pending)
+            ->whereNotNull('gatepass_path')
+            ->where('is_locked', false)
+            ->whereNull('driver_id')
+            ->where('vehicle_type', $driver->vehicle_type);
+    }
+
+    /**
+     * @param  Builder<Booking>  $query
+     * @return Builder<Booking>
+     */
+    public function scopeActiveForDriver(Builder $query, User $driver): Builder
+    {
+        return $query
+            ->where('driver_id', $driver->id)
+            ->whereIn('status', [BookingStatus::Accepted, BookingStatus::InTransit]);
     }
 }

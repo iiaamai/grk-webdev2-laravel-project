@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Http\Controllers\Driver;
+
+use App\Actions\AcceptDriverBooking;
+use App\Actions\UpdateDriverDeliveryStatus;
+use App\Enums\BookingStatus;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Driver\UpdateDeliveryStatusRequest;
+use App\Models\Booking;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class DeliveryController extends Controller
+{
+    public function index(Request $request): View
+    {
+        $driver = $request->user();
+
+        $available = Booking::query()
+            ->availableForDriver($driver)
+            ->orderByDesc('created_at')
+            ->get();
+
+        $active = Booking::query()
+            ->activeForDriver($driver)
+            ->orderByDesc('accepted_at')
+            ->get();
+
+        return view('driver.deliveries.index', compact('available', 'active'));
+    }
+
+    public function show(Booking $booking): View
+    {
+        $this->authorize('view', $booking);
+
+        return view('driver.deliveries.show', compact('booking'));
+    }
+
+    public function accept(
+        Booking $booking,
+        AcceptDriverBooking $acceptDriverBooking,
+        Request $request,
+    ): RedirectResponse {
+        $this->authorize('accept', $booking);
+
+        $acceptDriverBooking->execute($request->user(), $booking);
+
+        return redirect()
+            ->route('driver.deliveries.show', $booking)
+            ->with('status', 'Delivery accepted.');
+    }
+
+    public function updateStatus(
+        UpdateDeliveryStatusRequest $request,
+        Booking $booking,
+        UpdateDriverDeliveryStatus $updateDriverDeliveryStatus,
+    ): RedirectResponse {
+        $status = BookingStatus::from($request->validated('status'));
+
+        $updateDriverDeliveryStatus->execute($request->user(), $booking, $status);
+
+        return redirect()
+            ->route('driver.deliveries.show', $booking)
+            ->with('status', 'Delivery status updated.');
+    }
+}

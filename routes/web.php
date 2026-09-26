@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\RegisterDriverController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\BookingDocumentController;
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
+use App\Http\Controllers\Driver\DeliveryController as DriverDeliveryController;
 use App\Http\Controllers\PortalHomeController;
 use App\Http\Controllers\Staff\BookingController as StaffBookingController;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,12 @@ Route::middleware(['auth', 'verified', 'not_archived'])->group(function (): void
         ->name('driver.')
         ->group(function (): void {
             Route::get('/', PortalHomeController::class)->name('home');
+
+            Route::get('deliveries', [DriverDeliveryController::class, 'index'])->name('deliveries.index');
+            Route::get('deliveries/{booking}', [DriverDeliveryController::class, 'show'])->name('deliveries.show');
+            Route::post('deliveries/{booking}/accept', [DriverDeliveryController::class, 'accept'])->name('deliveries.accept');
+            Route::patch('deliveries/{booking}/status', [DriverDeliveryController::class, 'updateStatus'])
+                ->name('deliveries.status.update');
         });
 
     Route::middleware('role:'.UserRole::Staff->value)

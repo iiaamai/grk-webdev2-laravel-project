@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Actions\AcceptDriverBooking;
 use App\Enums\BookingStatus;
 use App\Models\Booking;
 use App\Models\User;
@@ -12,7 +13,8 @@ class BookingPolicy
     {
         return $user->isCustomer()
             || $user->isStaff()
-            || $user->isSystemAdmin();
+            || $user->isSystemAdmin()
+            || $user->isDriver();
     }
 
     public function view(User $user, Booking $booking): bool
@@ -21,7 +23,16 @@ class BookingPolicy
             return true;
         }
 
-        return $user->isCustomer() && $booking->customer_id === $user->id;
+        if ($user->isCustomer()) {
+            return $booking->customer_id === $user->id;
+        }
+
+        if ($user->isDriver()) {
+            return $booking->driver_id === $user->id
+                || app(AcceptDriverBooking::class)->isAvailableForDriver($user, $booking);
+        }
+
+        return false;
     }
 
     public function create(User $user): bool
@@ -59,15 +70,33 @@ class BookingPolicy
 
         if ($user->isDriver()) {
             return $booking->driver_id === $user->id
-                || (
-                    $booking->status === BookingStatus::Pending
-                    && $booking->hasGatepass()
-                    && ! $booking->is_locked
-                    && $booking->driver_id === null
-                );
+                || app(AcceptDriverBooking::class)->isAvailableForDriver($user, $booking);
         }
 
         return false;
+    }
+
+    public function accept(User $user, Booking $booking): bool
+    {
+        if (! $user->isDriver()) {
+            return false;
+        }
+
+        if (! app(AcceptDriverBooking::class)->isAvailableForDriver($user, $booking)) {
+            return false;
+        }
+
+        return ! Booking::query()
+            ->where('driver_id', $user->id)
+            ->whereIn('status', [BookingStatus::Accepted, BookingStatus::InTransit])
+            ->exists();
+    }
+
+    public function updateDeliveryStatus(User $user, Booking $booking): bool
+    {
+        return $user->isDriver()
+            && $booking->driver_id === $user->id
+            && in_array($booking->status, [BookingStatus::Accepted, BookingStatus::InTransit], true);
     }
 
     public function cancel(User $user, Booking $booking): bool

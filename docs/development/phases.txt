@@ -57,7 +57,7 @@ BACKEND PHASES (do before matching UI)
 - Staff: update fields, status/cancel only before gatepass; first gatepass upload
 - Admin: full CRUD, gatepass override, archive
 
-[ ] B5. Driver deliveries
+[x] B5. Driver deliveries
 - Available (gatepass + matching vehicle type), one active, accept, status updates
 - Vehicle in_use / release
 

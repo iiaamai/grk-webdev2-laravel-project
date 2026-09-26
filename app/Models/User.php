@@ -4,7 +4,10 @@ namespace App\Models;
 
 use App\Enums\UserRole;
 use App\Models\Concerns\Archivable;
+use App\Support\MailIntegration;
 use Database\Factories\UserFactory;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,7 +27,7 @@ use Illuminate\Notifications\Notifiable;
     'email_verified_at',
 ])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use Archivable, HasFactory, Notifiable;
@@ -41,6 +44,18 @@ class User extends Authenticatable
             'capacity_kg' => 'integer',
             'archived_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Skip sending while Mail integration is a placeholder.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        if (! MailIntegration::isEnabled()) {
+            return;
+        }
+
+        $this->notify(new VerifyEmail);
     }
 
     /**

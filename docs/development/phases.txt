@@ -8,6 +8,8 @@ Approach
 - External APIs (Mail, Mapbox, PayMongo): placeholders first — stub services,
   no live calls until keys are set. See development_notes.txt.
 
+Status legend: [ ] pending · [x] done
+
 Checkpoints
 - A: Customer books → gatepass → driver delivers → EIR/POD → completed
 - B (MVP): A + invoice unpaid/paid
@@ -21,7 +23,7 @@ Brand
 
 BACKEND PHASES (do before matching UI)
 
-B0. Foundation
+[x] B0. Foundation
 - Migrations for all models (see docs/development/models)
 - Extend users table (role, mobile, driver fields, archived_at) — see user.txt
 - Soft archive (archived_at); optional global scope on lists
@@ -29,63 +31,64 @@ B0. Foundation
 - Scope: migrations + models + seeders only (no auth UI yet)
 - Pre-start env: APP_*, sqlite, Asia/Manila — see development_notes.txt “Before starting”
 
-B1. Auth
+[x] B1. Auth
 - Unified users + roles (customer, driver, staff, system_admin)
 - Shared login → redirect by role
 - Customer/Driver register + email verification (auto-active)
 - Admin creates Staff (and any role)
-- Mail send: placeholder until MAIL_* enabled (see development_notes.txt)
-- While Mail placeholder: seed email_verified_at OR stub verify send (decide in dev notes)
-- Auth stack: choose manual vs Breeze at start of B1 (see development_notes.txt)
+- Mail send: placeholder until MAIL_* / GK_MAIL_ENABLED (see development_notes.txt)
+- While Mail placeholder: seed + new registers set email_verified_at; verify send is no-op
+- Auth stack: manual controllers + Form Requests (not Breeze)
 
-B2. Admin master data
+[ ] B2. Admin master data
 - Settings, Pricing List, Fleet, User management
 
-B3. Customer bookings (data + rules)
+[ ] B3. Customer bookings (data + rules)
 - Create / list / details; payout snapshot from Pricing
 - Pickup/dropoff address + lat/lng
 
-B4. Staff/Admin bookings + gatepass
+[ ] B4. Staff/Admin bookings + gatepass
 - Staff: update fields, status/cancel only before gatepass; first gatepass upload
 - Admin: full CRUD, gatepass override, archive
 
-B5. Driver deliveries
+[ ] B5. Driver deliveries
 - Available (gatepass + matching vehicle type), one active, accept, status updates
 - Vehicle in_use / release
 
-B6. EIR + POD
+[ ] B6. EIR + POD
 - Required both before completed
 
-B7. Invoice (MVP end)
+[ ] B7. Invoice (MVP end)
 - One per booking; unpaid / paid; Staff + Admin mark paid
 - PayMongo: placeholder only (nullable paymongo_reference; no API until after MVP)
 → Checkpoint B (MVP)
 
-B8. Mapbox helpers (post-MVP) — placeholder until MAPBOX_* keys
+[ ] B8. Mapbox helpers (post-MVP) — placeholder until MAPBOX_* keys
 - Stub route helper (null / not configured); no live Mapbox calls
 - When enabled: static optimal route from coords (no live GPS)
 
-B9. Emails (post-MVP) — placeholder until MAIL_* keys
+[ ] B9. Emails (post-MVP) — placeholder until MAIL_* keys
 - Stub / no-op send until enabled; events listed in email_events.txt
 - When enabled: Laravel Mail wired to those events
 
-B10. Ratings + activity logs + earnings queries (post-MVP)
+[ ] B10. Ratings + activity logs + earnings queries (post-MVP)
 
 ---
 
 FRONTEND PHASES (after matching backend slice)
 
-F1. Layout shells + nav for customer / driver / staff / admin
-F2. Auth pages (shared login, register customer/driver, verify email)
+[ ] F1. Layout shells + nav for customer / driver / staff / admin
+[ ] F2. Auth pages (shared login, register customer/driver, verify email)
+    (minimal stub forms shipped with B1 for QA; polish in F2)
     (verify UI ok; real mail send awaits MAIL_* — development_notes.txt)
-F3. Admin: settings, pricing, fleet, users
-F4. Customer: My Bookings + new booking form + details
-F5. Staff: overview, bookings, gatepass upload
-F6. Driver: deliveries available / active / details
-F7. Document upload/view UI (ACL)
-F8. Invoice UI
-F9. Map on booking details (after accept) — placeholder until MAPBOX_* keys
-F10. Ratings, activity logs, earnings/overview charts
+[ ] F3. Admin: settings, pricing, fleet, users
+[ ] F4. Customer: My Bookings + new booking form + details
+[ ] F5. Staff: overview, bookings, gatepass upload
+[ ] F6. Driver: deliveries available / active / details
+[ ] F7. Document upload/view UI (ACL)
+[ ] F8. Invoice UI
+[ ] F9. Map on booking details (after accept) — placeholder until MAPBOX_* keys
+[ ] F10. Ratings, activity logs, earnings/overview charts
 
 ---
 

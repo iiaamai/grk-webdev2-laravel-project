@@ -63,10 +63,11 @@ Before starting (pre-B0 recommendations)
 - Do not add MAIL_*, Mapbox, or PayMongo keys until those integrations are enabled.
 
 2. B1 email verification while Mail is placeholder (decide before coding auth)
-- Option A (recommended for local demo): seed users with email_verified_at already set
-  so login works without real mail.
-- Option B: keep verify routes/UI but skip actual send (stub path).
-- Pick one before B1 so login is not blocked during development.
+- DECIDED (B1): Option A + auto-verify on register while GK_MAIL_ENABLED=false.
+  Seeds and new customer/driver/admin-created users get email_verified_at set.
+  Verify routes exist; sendEmailVerificationNotification is a no-op until Mail enabled.
+- When enabling Mail: set GK_MAIL_ENABLED=true and MAIL_* keys; new registers may
+  leave email_verified_at null and use real verification emails.
 
 3. Extend stock users migration in B0
 - Default Laravel users table lacks role, mobile, driver fields, archived_at.
@@ -78,8 +79,8 @@ Before starting (pre-B0 recommendations)
 - Do not mix B1 auth UI or portal routes into the same pass.
 
 5. Auth stack (decide at B1, not B0)
-- Manual controllers + Form Requests vs Laravel Breeze — either is fine.
-- Choose once so portal prefixes (/customer, /driver, /staff, /admin) stay consistent.
+- DECIDED (B1): Manual controllers + Form Requests (not Breeze), so portal
+  prefixes (/customer, /driver, /staff, /admin) stay first-class in routes/web.php.
 
 6. Soft archive (optional but useful in B0)
 - Shared archived_at pattern + global scope (or query helper) so normal lists
